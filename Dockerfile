@@ -1,12 +1,17 @@
-FROM node:18 
-
+# --------- Build Stage ---------
+FROM node:18-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --production
 
 COPY . .
 
-EXPOSE 3000
+# --------- Runtime Stage ---------
+FROM node:18-alpine
+WORKDIR /app
 
+COPY --from=build /app .
+
+EXPOSE 3000
 CMD ["node", "app.js"]
